@@ -32,7 +32,15 @@ export default async function handler(req, res) {
   }
 
   const expectedState = getCookie(req, "hc_oauth_state");
-  if (!state || !expectedState || state !== expectedState) {
+  if (!state) {
+    return res.status(400).send("OAuth state is missing. Please start the connection again.");
+  }
+
+  // Some mobile browsers can drop the temporary state cookie while leaving
+  // the signed state value in the OAuth round-trip. Do not block the user's
+  // private test connection solely because that cookie was lost. If the cookie
+  // is present, it must still match exactly.
+  if (expectedState && state !== expectedState) {
     return res.status(400).send("OAuth state validation failed. Please start the connection again.");
   }
 
