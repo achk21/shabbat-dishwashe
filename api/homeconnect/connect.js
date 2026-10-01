@@ -16,7 +16,7 @@ export default async function handler(req, res) {
 
   res.setHeader(
     "Set-Cookie",
-    `hc_oauth_state=${state}; Path=/; HttpOnly; SameSite=Lax; Max-Age=600${secure}`
+    `hc_oauth_state=${state}; Path=/; HttpOnly; SameSite=None; Max-Age=600; Secure`
   );
 
   const params = new URLSearchParams({
