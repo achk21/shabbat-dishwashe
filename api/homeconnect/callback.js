@@ -1,3 +1,4 @@
+import { saveTokens } from "../../lib/homeconnect.js";
 const REDIRECT_URI =
   process.env.HOME_CONNECT_REDIRECT_URI ||
   "https://shabbat-dishwashe.vercel.app/api/homeconnect/callback";
@@ -79,6 +80,8 @@ export default async function handler(req, res) {
       return res.status(502).send(`Home Connect token error: ${escapeHtml(message)}`);
     }
 
+    await saveTokens(tokenData);
+
     const applianceResponse = await fetch(
       "https://api.home-connect.com/api/homeappliances",
       {
@@ -112,8 +115,6 @@ export default async function handler(req, res) {
           .join("")
       : "<p>החיבור הצליח, אבל לא נמצאו מכשירים בחשבון.</p>";
 
-    // Do not print or log OAuth tokens here. Persistent encrypted storage
-    // will be added only after this live-connection test succeeds.
     res.setHeader(
       "Set-Cookie",
       "hc_oauth_state=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0; Secure"
@@ -135,7 +136,7 @@ a{color:#8db7ff}
 <body>
 <div class="card">
 <h1 class="ok">Home Connect מחובר ✓</h1>
-<p>האימות הצליח והצלחנו לקרוא את המכשירים בחשבון שלך.</p>
+<p>האימות הצליח, ההרשאה נשמרה בצורה מתמשכת, והצלחנו לקרוא את המכשירים בחשבון שלך.</p>
 ${cards}
 <p><a href="/">חזרה למסך הראשי</a></p>
 </div>
